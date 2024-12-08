@@ -2,6 +2,7 @@
 config.py
 test.py
 test2.py
+cache
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
