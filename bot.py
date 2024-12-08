@@ -1,6 +1,8 @@
 from vkwave.bots import SimpleLongPollBot
 import aiohttp
+import threading
 import os
+from cache_cleaner import cache_clean
 from config import *
 from GIF_ex import gif_encs
 import vkwave
@@ -17,7 +19,7 @@ async def file_save(url, path) -> str:
                 with open(path, 'wb') as f:
                         f.write(content)
                 return path
-
+threading.Thread(target=cache_clean).start()
 
 async def main():
 
