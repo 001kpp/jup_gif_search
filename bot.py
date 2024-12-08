@@ -4,7 +4,10 @@ import os
 from config import *
 from GIF_ex import gif_encs
 import vkwave
+from ai_utils import GPTClient
 import asyncio
+
+GPT = GPTClient(gpt_token, gpt_model, None, assist_id)
 
 async def file_save(url, path) -> str:
      async with aiohttp.ClientSession() as session:
@@ -27,7 +30,10 @@ async def main():
         print(msg_doc_url)
         paths_to_save = [os.path.join(cache_path, f"{str(user_data.id)}_first.gif"), os.path.join(cache_path, f"{str(user_data.id)}_second.gif"), os.path.join(cache_path, f"{str(user_data.id)}_final.gif")] 
         gif_encs(await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.gif")), paths_to_save)
-        await event.answer(message= "гифка успешно сохранена, ожидайте ответа") 
+        tr = GPT.create_thread()
+        upload_files = [GPT.upload_file(paths_to_save[0]), GPT.upload_file(paths_to_save[1]), GPT.upload_file(paths_to_save[2])]
+        GPT.add_message(tr, ".", upload_files)
+        await event.answer(message= GPT.get_answer(tr)) 
 
     asyncio.create_task(bot.run())
     while True: await asyncio.sleep(0)    

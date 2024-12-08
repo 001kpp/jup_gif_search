@@ -72,7 +72,7 @@ class GPTClient:
         )
         return result.id
     
-    def add_message(self, thread_id:str, user_question:str, file_id:str=None) -> str:
+    def add_message(self, thread_id:str, user_question:str, file_id:str=None, ) -> str:
         if file_id != None:
             message =  self.client.beta.threads.messages.create(
                 thread_id=thread_id,
@@ -81,6 +81,7 @@ class GPTClient:
                 attachments= [{"file_id":file_id,  "tools": [{"type": "file_search"}]}]
             )
             return message
+  
         else:
              message =  self.client.beta.threads.messages.create(
                 thread_id=thread_id,
@@ -89,11 +90,7 @@ class GPTClient:
             )
              return message
         
-    def add_message_without_thread(self, user_question:str, file_id:str=None) ->str:
-        if file_id != None:
-            message = self.client.chat.completions.create
-            
-        
+                
     def add_audio(self, audio:base64, text_resp:str) -> str:
         encoded_string = base64.b64encode(open(audio, "rb").read())
         audio_add = self.client.chat.completions.create(
