@@ -1,7 +1,14 @@
 from vkwave.bots import SimpleLongPollBot
+import aiohttp
 from config import *
 import vkwave
 import asyncio
+
+async def file_get():
+     url = f"https://api.vk.com/method/docs.getMessagesUploadServer?access_token={bot_token}&v={api_v}"
+     async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                return await response.json()
 
 async def main():
     bot = SimpleLongPollBot(client=vkwave.client.AIOHTTPClient(loop=asyncio.get_event_loop()), tokens=bot_token, group_id=group_ig)
