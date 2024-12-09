@@ -25,7 +25,7 @@ async def main():
 
     bot = SimpleLongPollBot(client=vkwave.client.AIOHTTPClient(loop=asyncio.get_event_loop()), tokens=bot_token, group_id=group_ig)
 
-    @bot.message_handler(bot.text_filter("//гиф"))
+    @bot.message_handler()
     async def handle(event: bot.SimpleBotEvent) -> str:
         if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext =="gif":
             user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
