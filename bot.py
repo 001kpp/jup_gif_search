@@ -45,7 +45,7 @@ async def main():
             GPT.add_message(tr, upload_files,  img_files=True)
             await event.answer(message= GPT.get_answer(tr)) 
         else:
-              await event.answer(message="гифка не найдена")
+              pass
     asyncio.create_task(bot.run())
     while True: await asyncio.sleep(0)    
 
