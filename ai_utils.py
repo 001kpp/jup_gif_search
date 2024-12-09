@@ -72,8 +72,8 @@ class GPTClient:
         )
         return result.id
     
-    def add_message(self, thread_id:str, user_question:str, file_id:str=None, ) -> str:
-        if file_id != None:
+    def add_message(self, thread_id:str, user_question:str, file_id:str=None, img_files:bool=False) -> str:
+        if file_id != None and img_files ==False:
             message =  self.client.beta.threads.messages.create(
                 thread_id=thread_id,
                 role="user",
@@ -81,7 +81,12 @@ class GPTClient:
                 attachments= [{"file_id":file_id,  "tools": [{"type": "file_search"}]}]
             )
             return message
-  
+        elif img_files == True:
+                message =  self.client.beta.threads.messages.create(
+                thread_id=thread_id,
+                role="user",
+                content= user_question,
+                )
         else:
              message =  self.client.beta.threads.messages.create(
                 thread_id=thread_id,

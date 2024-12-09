@@ -27,16 +27,25 @@ async def main():
 
     @bot.message_handler(bot.text_filter("//гиф"))
     async def handle(event: bot.SimpleBotEvent) -> str:
-        user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
-        msg_doc_url =event.object.object.message.attachments[0].doc.url
-        print(msg_doc_url)
-        paths_to_save = [os.path.join(cache_path, f"{str(user_data.id)}_first.gif"), os.path.join(cache_path, f"{str(user_data.id)}_second.gif"), os.path.join(cache_path, f"{str(user_data.id)}_final.gif")] 
-        gif_encs(await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.gif")), paths_to_save)
-        tr = GPT.create_thread()
-        upload_files = [GPT.upload_file(paths_to_save[0]), GPT.upload_file(paths_to_save[1]), GPT.upload_file(paths_to_save[2])]
-        GPT.add_message(tr, ".", upload_files)
-        await event.answer(message= GPT.get_answer(tr)) 
-
+        if event.object.object.message.attachments:
+            user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
+            msg_doc_url =event.object.object.message.attachments[0].doc.url
+            paths_to_save = [os.path.join(cache_path, f"{str(user_data.id)}_first.jpg"), 
+                            os.path.join(cache_path, f"{str(user_data.id)}_second.jpg"), 
+                            os.path.join(cache_path, f"{str(user_data.id)}_final.jpg")] 
+            
+            gif_encs(await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.gif")), paths_to_save)
+            tr = GPT.create_thread()
+            upload_files = [
+                            {"type": "image_file", "image_file": {"file_id":GPT.upload_file(paths_to_save[0], purpose="user_data")}}, 
+                            {"type": "image_file","image_file":{"file_id":GPT.upload_file(paths_to_save[1], purpose="user_data")}}, 
+                            {"type": "image_file", "image_file":{"file_id":GPT.upload_file(paths_to_save[2], purpose="user_data")}},
+                        ]
+            
+            GPT.add_message(tr, upload_files,  img_files=True)
+            await event.answer(message= GPT.get_answer(tr)) 
+        else:
+              await event.answer(message="гифка не найдена")
     asyncio.create_task(bot.run())
     while True: await asyncio.sleep(0)    
 
