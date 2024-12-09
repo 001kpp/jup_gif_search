@@ -27,7 +27,7 @@ async def main():
 
     @bot.message_handler(bot.text_filter("//гиф"))
     async def handle(event: bot.SimpleBotEvent) -> str:
-        if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc:
+        if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext =="gif":
             user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
             msg_doc_url =event.object.object.message.attachments[0].doc.url
             paths_to_save = [os.path.join(cache_path, f"{str(user_data.id)}_first.jpg"), 
