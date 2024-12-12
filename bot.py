@@ -69,11 +69,11 @@ async def main():
             upload_files = []
             k=0
             print(len(paths_to_save))
-            print(paths_to_save)
+            print("72str ", paths_to_save)
             while k != len(paths_to_save):
                  upload_files.append({"type": "image_file", "image_file": {"file_id":GPT.upload_file(paths_to_save[k], purpose="user_data")}})
-                 #print(upload_files)
                  k+=1
+                 print("76str ", upload_files)
                  print(k)
 
             if  isinstance(msg_text, list) and isinstance(msg_text[1], dict): 
@@ -82,7 +82,7 @@ async def main():
             elif isinstance(msg_text, dict):
                  print(1)
                  upload_files.append(msg_text) 
-            print(upload_files)
+            print("84str ", upload_files)
 
             GPT.add_message(tr, upload_files,  img_files=True)
             await event.reply(message= GPT.get_answer(tr)) 
