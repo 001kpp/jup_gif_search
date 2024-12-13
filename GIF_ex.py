@@ -9,8 +9,6 @@ def gif_encs(path, paths_to_save:list, frames_to_cut:int=3) ->list:
         print("u ", frames_count)      
         while cnt < frames_to_cut and i < frames_count:
                 gif.seek(i)
-                print(j)
-                print("jj", i)
                 print(paths_to_save[j])
                 i += frames_count // (frames_to_cut - 1)
                 cnt += 1
@@ -18,8 +16,6 @@ def gif_encs(path, paths_to_save:list, frames_to_cut:int=3) ->list:
                 frame = gif.convert('RGB')
                 frame.save(paths_to_save[j])
                 j+=1
-                print("i ", paths_to_save)
-                print("j", i)
         return paths_to_save
 
 

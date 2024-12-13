@@ -23,15 +23,15 @@ threading.Thread(target=cache_clean).start()
 
 async def main():
 
-    bot = SimpleLongPollBot(client=vkwave.client.AIOHTTPClient(loop=asyncio.get_event_loop()), tokens=bot_token, group_id=group_ig)
+    bot = SimpleLongPollBot(client=vkwave.client.AIOHTTPClient(loop=asyncio.get_event_loop()), tokens=bot_token, group_id=group_id)
 
     @bot.message_handler()
     async def handle(event: bot.SimpleBotEvent) -> str:
         if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext =="gif":
             user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
             msg_text = event.object.object.message.text
-
-            if event.object.object.message.text and ";" in msg_text:
+            print(msg_text)
+            if";" in msg_text:
                     msg_text = msg_text.split(";") 
                     print(msg_text)
 
@@ -47,42 +47,46 @@ async def main():
                         elif len(msg_text) > 2:
                              await event.answer(message= "количество аргументов больше 2 (аргументы разделяются знаком ';')")
                              pass 
-                    else:
-                        print(1)
+                    elif msg_text != None or msg_text != '':
+                        print(10)
                         msg_text = {"type":"text", "text":"".join(msg_text)}                        
-                        
+            elif str(msg_text):
+                 print(11)
+                 msg_text = {"type":"text", "text":"".join(msg_text)}                    
             print(msg_text)
 
             msg_doc_url =event.object.object.message.attachments[0].doc.url
 
             paths_to_save = [] 
-            if  isinstance(msg_text, list):
-                 k= 0               
-                 while k != int(msg_text[0]):
-                    paths_to_save.append(os.path.join(cache_path, f"{str(user_data.id)}_{k}.jpg"))
-                    k+=1
-                    print(k)   
-            gif_encs(await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.gif")), paths_to_save)     
-
+            if  isinstance(msg_text, list): #make save_path  
+                 i=0          
+                 while i !=  int(msg_text[0]):
+                    paths_to_save.append(os.path.join(cache_path, f"{str(user_data.id)}_{i}.jpg"))
+                    i+=1
+                    print(i)   
+                 gif_encs(path=await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.gif")), paths_to_save=paths_to_save, frames_to_cut=int(msg_text[0]))     
+            elif isinstance(msg_text, dict) or isinstance(msg_text, str):
+                 for i in range(3):
+                    paths_to_save.append(os.path.join(cache_path, f"{str(user_data.id)}_{i}.jpg"))
+                    print(paths_to_save)
+                 gif_encs(path=await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.gif")), paths_to_save=paths_to_save)
+                 
             tr = GPT.create_thread()
       
             upload_files = []
-            k=0
-            print(len(paths_to_save))
-            print("72str ", paths_to_save)
-            while k != len(paths_to_save):
-                 upload_files.append({"type": "image_file", "image_file": {"file_id":GPT.upload_file(paths_to_save[k], purpose="user_data")}})
-                 k+=1
-                 print("76str ", upload_files)
-                 print(k)
 
-            if  isinstance(msg_text, list) and isinstance(msg_text[1], dict): 
-                 print(1)
-                 upload_files.append(msg_text[1]) 
-            elif isinstance(msg_text, dict):
-                 print(1)
-                 upload_files.append(msg_text) 
-            print("84str ", upload_files)
+            for i in range(len(paths_to_save)): #add upload_files
+                 upload_files.append({"type": "image_file", "image_file": {"file_id":GPT.upload_file(paths_to_save[i], purpose="user_data")}})
+                 print("76str ", upload_files)
+            print(msg_text)
+            if str(msg_text):
+                if  isinstance(msg_text, list) and isinstance(msg_text[1], dict): 
+                    print(2)
+                    upload_files.append(msg_text[1]) 
+                elif isinstance(msg_text, dict):
+                    print(msg_text)
+                    upload_files.append(msg_text) 
+                print("84str ", upload_files)
 
             GPT.add_message(tr, upload_files,  img_files=True)
             await event.reply(message= GPT.get_answer(tr)) 
