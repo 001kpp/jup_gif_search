@@ -27,7 +27,7 @@ async def main():
 
     @bot.message_handler()
     async def handle(event: bot.SimpleBotEvent) -> str:
-        if event.object.object.message.peer_id != filtered_chat:
+        if int(event.object.object.message.peer_id) != int(filtered_chat):
             if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext =="gif":
                 user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
                 msg_text = event.object.object.message.text
