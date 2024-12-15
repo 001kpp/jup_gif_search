@@ -28,10 +28,9 @@ async def main():
     @bot.message_handler()
     async def handle(event: bot.SimpleBotEvent) -> str:
         if int(event.object.object.message.peer_id) != int(filtered_chat):
+            user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
             if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext =="gif":
-                user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
                 msg_text = event.object.object.message.text
-                print()
                 if";" in msg_text:
                         msg_text = msg_text.split(";") 
                         print(msg_text)
@@ -91,9 +90,38 @@ async def main():
 
                 GPT.add_message(tr, upload_files,  img_files=True)
                 await event.reply(message= GPT.get_answer(tr)) 
-            else:
-                pass
-        
+                GPT.delete_thread(tr)
+
+            elif event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext in ("png", "jpg", "jpeg","bmp"):
+                msg_doc_url =event.object.object.message.attachments[0].doc.url
+                msg_doc_format = event.object.object.message.attachments[0].doc.ext
+                msg_text = event.object.object.message.text
+
+                img =await file_save(msg_doc_url, os.path.join(cache_path, f"{str(user_data.id)}_doc.{msg_doc_format}"))
+                print("55 ",img)
+                upload_file = [{"type": "image_file", "image_file": {"file_id":GPT.upload_file(img, purpose="user_data")}}]
+                if str(msg_text):
+                    msg_text = {"type":"text", "text":"".join(msg_text)} 
+                    upload_file.append(msg_text)
+                tr = GPT.create_thread()
+                GPT.add_message(tr, upload_file,  img_files=True)  
+                await event.reply(message= GPT.get_answer(tr)) 
+                GPT.delete_thread(tr)
+
+            elif event.object.object.message.attachments and event.object.object.message.attachment[0].photo:
+                photo = await file_save(event.object.object.message.attachments[0].photo.sizes[4].url, f"{str(user_data.id)}_photo.jpg")
+                upload_file =[{"type": "image_file", "image_file": {"file_id":GPT.upload_file(photo, purpose="user_data")}}]
+                msg_text = event.object.object.message.text
+                if str(msg_text):
+                    msg_text = {"type":"text", "text":"".join(msg_text)} 
+                    upload_file.append(msg_text)
+                tr = GPT.create_thread()
+                GPT.add_message(tr, upload_file,  img_files=True)  
+                await event.reply(message= GPT.get_answer(tr)) 
+                GPT.delete_thread(tr)
+
+                 
+            
     asyncio.create_task(bot.run())
     while True: await asyncio.sleep(0)    
 

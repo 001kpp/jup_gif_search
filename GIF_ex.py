@@ -16,6 +16,7 @@ def gif_encs(path, paths_to_save:list, frames_to_cut:int=3) ->list:
                 frame = gif.convert('RGB')
                 frame.save(paths_to_save[j])
                 j+=1
+                print(i)
         return paths_to_save
 
 

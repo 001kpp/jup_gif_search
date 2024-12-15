@@ -11,7 +11,7 @@ def cache_clean(cache_path:str=cache_path, max_files:int = max_files) ->bool:
             if file_num >= max_files:
                 rmtree(cache_path, ignore_errors=True)
                 Path(cache_path).mkdir(parents=True, exist_ok=True)
-            time.sleep(12)
+            time.sleep(5)
         except ValueError:
             print(ValueError)
         
