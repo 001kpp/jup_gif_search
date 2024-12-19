@@ -171,7 +171,7 @@ async def main():
                 GPT.add_message(tr, upload_file,  img_files=True) 
                 answ_gpt = GPT.get_answer(tr) 
 
-                await event.reply(message= GPT.get_answer(tr)) 
+                await event.reply(message= answ_gpt) 
                 logger.info(f"bot answer  peer: {peer_id}; user: {user_data.id}; message = '{answ_gpt}'")
                 
                 GPT.delete_thread(tr)
