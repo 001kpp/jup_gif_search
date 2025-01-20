@@ -44,7 +44,7 @@ async def main():
     @bot.message_handler()
     async def handle(event: bot.SimpleBotEvent) -> str:
         peer_id =event.object.object.message.peer_id 
-        if int(peer_id) != int(filtered_chat):
+        if int(peer_id) not in filtered_chats:
             user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.from_id)).response[0]
             logger.info(f"handled at peer: {peer_id}; user:  {user_data.id}")
             if event.object.object.message.attachments and  event.object.object.message.attachments[0].doc and  event.object.object.message.attachments[0].doc.ext =="gif":
